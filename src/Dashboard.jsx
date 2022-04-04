@@ -80,12 +80,9 @@ const CustomInput = React.forwardRef(function CustomInput(props, ref) {
     );
 });
 
-
-
 const color = cyan[50];
 
-
-export default function Dashboard() {
+export default function Dashboard(props) {
     const [book, setBook] = useState([]);
     const [edit, setEdit] = useState({ status: false, editData: {} });
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
@@ -131,6 +128,10 @@ export default function Dashboard() {
 
                 <br />
                 <Button variant="contained" size='small' type="submit">update</Button>
+                <Button size='small' sx={{ ml: 2 }} onClick={(e) => {
+                    e.preventDefault();
+                    props.setAuth(localStorage.removeItem("token"))
+                }} >Logout</Button>
             </form>
         }
 
@@ -150,7 +151,10 @@ export default function Dashboard() {
 
             <br />
             <Button variant="contained" size='small' type="submit">Register</Button>
-            {/* <input type="submit" /> */}
+            <Button size='small' sx={{ ml: 2 }} onClick={(e) => {
+                e.preventDefault();
+                props.setAuth(localStorage.removeItem("token"))
+            }} >Logout</Button>
         </form>
     }
 
@@ -164,40 +168,43 @@ export default function Dashboard() {
                 </CardContent>
             </Card>
 
-            <TableContainer component={Paper} sx={{ width: '500px', mt: 4, boxShadow: 3 }}>
-                <Table aria-label="simple table" size='small'>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Book Name</TableCell>
-                            <TableCell>Author Name</TableCell>
-                            <TableCell>Price&nbsp;($)</TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {book.map((item) => (
-                            <TableRow
-                                key={item._id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell>{item.bookName}</TableCell>
-                                <TableCell>{item.authorName}</TableCell>
-                                <TableCell>{item.price}</TableCell>
-                                <TableCell>
-                                    <Stack direction="row">
-                                        <IconButton aria-label="edit" size="small" onClick={() => setEdit({ status: true, editData: item })}>
-                                            <EditIcon fontSize="small" />
-                                        </IconButton>
-                                        <IconButton aria-label="delete" size="small" onClick={() => deleteBook(item._id)}>
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    </Stack>
-                                </TableCell>
+            <div style={{ maxHeight: '600px', overflowY: 'scroll', marginTop: '20px' }}>
+                <TableContainer component={Paper} sx={{ width: '500px', boxShadow: 3 }}>
+                    <Table aria-label="simple table" size='small'>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Book Name</TableCell>
+                                <TableCell>Author Name</TableCell>
+                                <TableCell>Price&nbsp;($)</TableCell>
+                                <TableCell></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {book.map((item) => (
+                                <TableRow
+                                    key={item._id}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>{item.bookName}</TableCell>
+                                    <TableCell>{item.authorName}</TableCell>
+                                    <TableCell>{item.price}</TableCell>
+                                    <TableCell>
+                                        <Stack direction="row">
+                                            <IconButton aria-label="edit" size="small" onClick={() => setEdit({ status: true, editData: item })}>
+                                                <EditIcon fontSize="small" />
+                                            </IconButton>
+                                            <IconButton aria-label="delete" size="small" onClick={() => deleteBook(item._id)}>
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        </Stack>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
+
         </div>
     )
 }

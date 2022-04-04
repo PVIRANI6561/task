@@ -5,11 +5,11 @@ import Login from './Login';
 
 export default function App() {
 
-    const [auth, setAuth] = useState(false);
+    const [auth, setAuth] = useState(localStorage.getItem("token"));
 
     return (
         <React.Fragment>
-            {auth ? <Dashboard /> : <Login setAuth={setAuth} />}
+            {auth ? <Dashboard setAuth={setAuth} /> : <Login setAuth={setAuth} />}
         </React.Fragment>
     )
 }

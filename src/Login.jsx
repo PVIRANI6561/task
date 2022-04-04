@@ -1,5 +1,6 @@
 import React from 'react'
 import { useForm } from "react-hook-form";
+import { useState } from 'react';
 
 //MUI
 import Card from '@mui/material/Card';
@@ -7,9 +8,11 @@ import CardContent from '@mui/material/CardContent';
 import { Button } from '@mui/material';
 import { cyan } from '@mui/material/colors';
 import { Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 import { useInput } from '@mui/base';
 import { styled } from '@mui/system';
+import axios from 'axios';
 
 const blue = {
     100: '#DAECFF',
@@ -70,9 +73,18 @@ const color = cyan[50];
 export default function Login(props) {
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
+    const [err, setErr] = useState(null);
 
-    const onSubmit = (data) => {
-        props.setAuth(true);
+    const onSubmit = async (data) => {
+        const res = await axios.post('http://localhost:5050/login', data);
+        if (res.data.err) {
+            setErr(res.data.err)
+            props.setAuth(false)
+        } else {
+            setErr(null)
+            localStorage.setItem('token', res.data.token);
+            props.setAuth(localStorage.getItem('token'))
+        }
     }
 
     return (
@@ -88,15 +100,17 @@ export default function Login(props) {
                         <CustomInput aria-label="email" placeholder="Enter email"{...register("email", { required: true })} />
                         {errors.email && <span>This field is required</span>}
 
-                        <CustomInput aria-label="password" placeholder="Enter password" {...register("pass", { required: true })} />
-                        {errors.pass && <span>This field is required</span>}
+                        <CustomInput aria-label="password" placeholder="Enter password" {...register("password", { required: true })} />
+                        {errors.password && <span>This field is required</span>}
 
                         <br />
                         <Button variant="contained" size='small' type="submit">Login</Button>
+
+                        {/* {err && <div style={{ paddingTop: '10px' }}><Chip size='small' label={err} color="error" /></div>} */}
+                        {err && <div style={{ paddingTop: '10px' }}><Alert severity="error">{err}</Alert></div>}
                     </form>
                 </CardContent>
             </Card>
-
         </div>
     )
 }
