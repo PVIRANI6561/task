@@ -5,7 +5,7 @@ import axios from 'axios';
 
 //MUI
 import Card from '@mui/material/Card';
-import { Button, Divider } from '@mui/material';
+import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import CardContent from '@mui/material/CardContent';
 import { cyan } from '@mui/material/colors';
@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import Snackbar from '@mui/material/Snackbar';
+import { Alert } from '@mui/material';
 
 //MUI table
 import Table from '@mui/material/Table';
@@ -85,29 +87,47 @@ const color = cyan[50];
 export default function Dashboard(props) {
     const [book, setBook] = useState([]);
     const [edit, setEdit] = useState({ status: false, editData: {} });
+    const [open, setOpen] = React.useState(false);
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
+
+    const handleClick = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const config = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+    };
 
     useEffect(() => { getBook() }, [])
 
     const getBook = async () => {
-        const response = await axios.get('http://localhost:5050/get_book');
-        await setBook(response.data)
+        await axios.get('http://localhost:5050/get_book', { headers: config }).then((res) => {
+            setBook(res.data)
+            handleClick()
+        });
+        // await setBook(response.data)
     }
 
     const onSubmit = async (data) => {
         if (edit.status) {
-            await axios.put('http://localhost:5050/update_book', { _id: edit.editData._id, data: data });
+            await axios.put('http://localhost:5050/update_book', { _id: edit.editData._id, data: data }, { headers: config });
             setEdit({ status: false, editData: {} })
         } else {
-            await axios.post('http://localhost:5050/add_book', data);
+            console.log(data);
+            await axios.post('http://localhost:5050/add_book', data, { headers: config });
         }
         reset({ bookName: null, authorName: null, price: null });
         getBook();
     };
 
     const deleteBook = async (id) => {
-        await axios.delete('http://localhost:5050/delete_book', { data: { _id: id } });
-        getBook();
+        await axios.delete('http://localhost:5050/delete_book', { headers: config, data: { _id: id } }).then(getBook());
+        // getBook();
     }
 
     function bookForm() {
@@ -117,13 +137,13 @@ export default function Dashboard(props) {
                     Update Book
                 </Typography>
 
-                <CustomInput aria-label="Book Name" placeholder="Enter book name"{...register("bookName", { required: true })} value={edit.editData.bookName} />
+                <CustomInput name="bookName" aria-label="Book Name" placeholder="Enter book name" value={edit.editData.bookName} {...register("bookName", { required: true })} />
                 {errors.bookName && <span>This field is required</span>}
 
-                <CustomInput aria-label="Author Name" placeholder="Enter author name" {...register("authorName", { required: true })} value={edit.editData.authorName} />
+                <CustomInput name="authorName" aria-label="Author Name" placeholder="Enter author name" value={edit.editData.authorName} {...register("authorName", { required: true })} />
                 {errors.authorName && <span>This field is required</span>}
 
-                <CustomInput aria-label="price" placeholder="Price" {...register("price", { required: true, pattern: /^0|[1-9]\d*$/ })} value={edit.editData.price} />
+                <CustomInput name="price" aria-label="price" placeholder="Price" value={edit.editData.price} {...register("price", { required: true, pattern: /^0|[1-9]\d*$/ })} />
                 {errors.price && <span>This field is required</span>}
 
                 <br />
@@ -158,7 +178,6 @@ export default function Dashboard(props) {
         </form>
     }
 
-    console.log(book);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: color }}>
 
@@ -167,6 +186,12 @@ export default function Dashboard(props) {
                     {bookForm()}
                 </CardContent>
             </Card>
+
+            <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    {book.length} book found.
+                </Alert>
+            </Snackbar>
 
             <div style={{ maxHeight: '600px', overflowY: 'scroll', marginTop: '20px' }}>
                 <TableContainer component={Paper} sx={{ width: '500px', boxShadow: 3 }}>
@@ -204,7 +229,6 @@ export default function Dashboard(props) {
                     </Table>
                 </TableContainer>
             </div>
-
         </div>
     )
 }

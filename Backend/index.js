@@ -19,7 +19,6 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
 
 app.post("/login", async (request, response) => {
-
     if (validator.isEmail(request.body.email)) {
         const users = await loginModel.find({ email: request.body.email });
         var res = null
@@ -51,38 +50,67 @@ app.post("/login", async (request, response) => {
         res = { token: null, err: "Please enter valid email id" }
         response.send(res)
     }
-
 });
 
-app.post("/add_book", async (request, response) => {
-    const user = new userModel(request.body);
-
-    try {
-        await user.save();
-        response.send(user);
-    } catch (error) {
-        response.status(500).send(error);
+// Token verification
+function verifyToken(req, res, next) {
+    const bearerHeader = req.headers['authorization'];
+    console.log(bearerHeader);
+    if (bearerHeader) {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
+        next();
+    } else {
+        res.sendStatus(403);
     }
+}
+
+app.post("/add_book", verifyToken, (request, response) => {
+    jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
+        if (err) {
+            response.send(err.message)
+        } else {
+            const user = new userModel(request.body);
+
+            try {
+                await user.save();
+                response.send(user);
+            } catch (error) {
+                response.status(500).send(error);
+            }
+        }
+    })
 });
 
-app.get("/get_book", async (request, response) => {
-    const users = await userModel.find({});
-
-    try {
-        response.send(users);
-    } catch (error) {
-        response.status(500).send(error);
-    }
+app.get("/get_book", verifyToken, (request, response) => {
+    jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
+        if (err) {
+            response.send(err.message)
+        } else {
+            const users = await userModel.find({});
+            try {
+                response.send(users);
+            } catch (error) {
+                response.status(500).send(error);
+            }
+        }
+    })
 });
 
-app.delete("/delete_book", async (request, response) => {
-    const users = await userModel.deleteOne({ _id: request.body._id });
-
-    try {
-        response.send(users);
-    } catch (error) {
-        response.status(500).send(error);
-    }
+app.delete("/delete_book", verifyToken, (request, response) => {
+    jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
+        if (err) {
+            response.send(err.message)
+        } else {
+            const users = await userModel.deleteOne({ _id: request.body._id });
+            try {
+                response.send(users);
+            } catch (error) {
+                response.status(500).send(error);
+            }
+        }
+    })
 });
 
 app.put("/update_book", async (request, response) => {
