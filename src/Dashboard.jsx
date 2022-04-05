@@ -98,15 +98,17 @@ export default function Dashboard(props) {
         setOpen(false);
     };
 
-    const config = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+    const config = () => {
+        return {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
     };
 
     useEffect(() => { getBook() }, [])
 
     const getBook = async () => {
-        await axios.get('http://localhost:5050/get_book', { headers: config }).then((res) => {
+        await axios.get('http://localhost:5050/get_book', { headers: config() }).then((res) => {
             setBook(res.data)
             handleClick()
         });
@@ -115,18 +117,18 @@ export default function Dashboard(props) {
 
     const onSubmit = async (data) => {
         if (edit.status) {
-            await axios.put('http://localhost:5050/update_book', { _id: edit.editData._id, data: data }, { headers: config });
+            await axios.put('http://localhost:5050/update_book', { _id: edit.editData._id, data: data }, { headers: config() });
             setEdit({ status: false, editData: {} })
         } else {
             console.log(data);
-            await axios.post('http://localhost:5050/add_book', data, { headers: config });
+            await axios.post('http://localhost:5050/add_book', data, { headers: config() });
         }
         reset({ bookName: null, authorName: null, price: null });
         getBook();
     };
 
     const deleteBook = async (id) => {
-        await axios.delete('http://localhost:5050/delete_book', { headers: config, data: { _id: id } }).then(getBook());
+        await axios.delete('http://localhost:5050/delete_book', { headers: config(), data: { _id: id } }).then(getBook());
         // getBook();
     }
 
