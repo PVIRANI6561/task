@@ -71,20 +71,27 @@ const CustomInput = React.forwardRef(function CustomInput(props, ref) {
 
 const color = cyan[50];
 
-export default function Login(props) {
+export default function RegisterUser() {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [err, setErr] = useState(null);
 
+    const data = {
+        email: "parth@gmail.com",
+        password: "parth"
+    }
+
+    const config = {
+        'Content-Type': 'application/json',
+    };
+
     const onSubmit = async (data) => {
-        const res = await axios.post('http://localhost:5050/login', data);
+        setErr(null);
+        const res = await axios.post('http://localhost:5050/register', data, { headers: config });
         if (res.data.err) {
             setErr(res.data.err)
-            props.setAuth(false)
-        } else {
-            setErr(null)
-            localStorage.setItem('token', res.data.token);
-            props.setAuth(localStorage.getItem('token'))
+            return;
         }
+        window.location.href = "/";
     }
 
     return (
@@ -94,7 +101,7 @@ export default function Login(props) {
                 <CardContent>
                     <form id='registerForm' onSubmit={handleSubmit(onSubmit)}>
                         <Typography gutterBottom variant="h5" component="div">
-                            LogIn
+                            Register User
                         </Typography>
 
                         <CustomInput aria-label="email" placeholder="Enter email"{...register("email", { required: true })} />
@@ -104,11 +111,11 @@ export default function Login(props) {
                         {errors.password && <span>This field is required</span>}
 
                         <br />
-                        <Button variant="contained" size='small' type="submit">Login</Button>
+                        <Button variant="contained" size='small' type="submit">Register</Button>
 
-                        <Link to="/register">
+                        <Link to="/">
                             <Button size='small' sx={{ ml: 2 }}>
-                                register
+                                Login
                             </Button>
                         </Link>
 

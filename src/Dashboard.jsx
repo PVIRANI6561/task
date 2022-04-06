@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Snackbar from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 //MUI table
 import Table from '@mui/material/Table';
@@ -126,7 +127,7 @@ export default function Dashboard(props) {
     };
 
     const deleteBook = async (id) => {
-        await axios.delete('http://localhost:5050/delete_book', { headers: config, data: { _id: id } }).then(getBook());
+        await axios.delete('http://localhost:5050/delete_book', { headers: config, data: { _id: id } }).then(() => getBook());
         // getBook();
     }
 
@@ -181,7 +182,7 @@ export default function Dashboard(props) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: color }}>
 
-            <Card sx={{ minWidth: 275, boxShadow: 6 }}>
+            <Card sx={{ minWidth: 275, boxShadow: 'rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px' }}>
                 <CardContent>
                     {bookForm()}
                 </CardContent>
@@ -193,8 +194,8 @@ export default function Dashboard(props) {
                 </Alert>
             </Snackbar>
 
-            <div style={{ maxHeight: '600px', overflowY: 'scroll', marginTop: '20px' }}>
-                <TableContainer component={Paper} sx={{ width: '500px', boxShadow: 3 }}>
+            <div style={{ maxHeight: '600px', overflowY: 'scroll', marginTop: '20px', boxShadow: 'rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px' }}>
+                <TableContainer component={Paper} sx={{ width: '500px' }}>
                     <Table aria-label="simple table" size='small'>
                         <TableHead>
                             <TableRow>
@@ -215,9 +216,22 @@ export default function Dashboard(props) {
                                     <TableCell>{item.price}</TableCell>
                                     <TableCell>
                                         <Stack direction="row">
-                                            <IconButton aria-label="edit" size="small" onClick={() => setEdit({ status: true, editData: item })}>
-                                                <EditIcon fontSize="small" />
-                                            </IconButton>
+                                            {
+                                                edit.status
+                                                    ?
+                                                    <IconButton aria-label="edit" size="small" onClick={() => {
+                                                        setEdit({ status: false, editData: {} })
+                                                        reset({ bookName: null, authorName: null, price: null });
+                                                    }
+                                                    }>
+                                                        <CloseIcon fontSize="small" />
+                                                    </IconButton>
+                                                    :
+                                                    <IconButton aria-label="edit" size="small" onClick={() => setEdit({ status: true, editData: item })}>
+                                                        <EditIcon fontSize="small" />
+                                                    </IconButton>
+                                            }
+
                                             <IconButton aria-label="delete" size="small" onClick={() => deleteBook(item._id)}>
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
@@ -229,6 +243,6 @@ export default function Dashboard(props) {
                     </Table>
                 </TableContainer>
             </div>
-        </div>
+        </div >
     )
 }

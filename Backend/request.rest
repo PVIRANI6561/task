@@ -1,3 +1,13 @@
+###
+POST http://localhost:5050/register
+Content-Type: application/json
+
+{
+    "email" : "skylineinfosys@gmail.com",
+    "password" : "skyline"
+}  
+
+###
 POST http://localhost:5050/login
 Content-Type: application/json
 
@@ -15,12 +25,12 @@ POST http://localhost:5050/add_book
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNreWxpbmVpbmZvc3lzQGdtYWlsLmNvbSIsInBhc3MiOiIkMmIkMTAkZmJ0LjhjQ3NFTnBjRzg4WWlFTnlBT3NGUTRoVlVNQkpCVzRuLjNHeWwycU9VeVljcFp6Q0siLCJpYXQiOjE2NDkxNDAyNDJ9.CppLSv-VJMJGx-Nn8sQWoGOVmRH5QYECK6MFZXANfrs
 
-{ "bookName": "xyz2", "authorName": "sdfsd2f", "price": "12312312" }
+{ "bookName": "3 idiots", "authorName": "Amir Khan", "price": "350" }
 
 ###
 DELETE http://localhost:5050/delete_book
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNreWxpbmVpbmZvc3lzQGdtYWlsLmNvbSIsInBhc3MiOiIkMmIkMTAkZmJ0LjhjQ3NFTnBjRzg4WWlFTnlBT3NGUTRoVlVNQkpCVzRuLjNHeWwycU9VeVljcFp6Q0siLCJpYXQiOjE2NDkxMzg1MTR9.Ss19lQFiCjelPhRWnmKU2Hi8DcIVMPdSp3eI2QqGZUI
 
-{ "_id": "624aee95262856e63759d646" }
+{ "_id": "624c210a2ac081e7285f1323" }
 

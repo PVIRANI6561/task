@@ -6,6 +6,9 @@ const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const rs = require('randomstring');
 var validator = require('validator');
+const fs = require("fs");
+const event = require("events")
+const events = new event;
 require('./db/db.connection')
 const userModel = require('./schema/book.schema')
 const loginModel = require('./schema/login.schema')
@@ -18,15 +21,59 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
 
+// Token verification
+function verifyToken(req, res, next) {
+    const bearerHeader = req.headers['authorization'];
+    if (bearerHeader) {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
+        next();
+    } else {
+        res.sendStatus(403);
+    }
+}
+
+//Register user
+app.post("/register", (request, response) => {
+
+    if (validator.isEmail(request.body.email)) {
+        bcrypt.hash(request.body.password, 10, async function (err, hash) {
+            // Store hash in your password DB.
+            const users = await loginModel.find({ email: request.body.email });
+
+            if (users.length > 0) {
+                res = { err: "Email id is already exit." }
+                response.send(res)
+            } else {
+                const user = new loginModel({ email: request.body.email, password: hash });
+
+                try {
+                    await user.save();
+                    response.send(user);
+                } catch (error) {
+                    response.status(500).send(error);
+                }
+            }
+        });
+
+    } else {
+        res = { err: "Please enter valid email id" }
+        response.send(res)
+    }
+})
+
+//login page
 app.post("/login", async (request, response) => {
+
     if (validator.isEmail(request.body.email)) {
         const users = await loginModel.find({ email: request.body.email });
         var res = null
 
         if (users.length > 0) {
-            const user = { email: users[0].email, pass: users[0].pass };
+            const user = { email: users[0].email, password: users[0].password };
             try {
-                bcrypt.compare(request.body.password, user.pass).then(function (result) {
+                bcrypt.compare(request.body.password, user.password).then(function (result) {
                     if (result) {
                         const token = jwt.sign(user, process.env.SECRET_CODE)
                         res = { token: token, err: null }
@@ -52,20 +99,7 @@ app.post("/login", async (request, response) => {
     }
 });
 
-// Token verification
-function verifyToken(req, res, next) {
-    const bearerHeader = req.headers['authorization'];
-    console.log(bearerHeader);
-    if (bearerHeader) {
-        const bearer = bearerHeader.split(' ');
-        const bearerToken = bearer[1];
-        req.token = bearerToken;
-        next();
-    } else {
-        res.sendStatus(403);
-    }
-}
-
+//add book
 app.post("/add_book", verifyToken, (request, response) => {
     jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
         if (err) {
@@ -83,6 +117,7 @@ app.post("/add_book", verifyToken, (request, response) => {
     })
 });
 
+//get book
 app.get("/get_book", verifyToken, (request, response) => {
     jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
         if (err) {
@@ -98,6 +133,7 @@ app.get("/get_book", verifyToken, (request, response) => {
     })
 });
 
+//delete book
 app.delete("/delete_book", verifyToken, (request, response) => {
     jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
         if (err) {
@@ -113,14 +149,24 @@ app.delete("/delete_book", verifyToken, (request, response) => {
     })
 });
 
-app.put("/update_book", async (request, response) => {
-    const users = await userModel.where({ _id: request.body._id }).update(request.body.data);
+//update book
+app.put("/update_book", verifyToken, (request, response) => {
+    jwt.verify(request.token, process.env.SECRET_CODE, async (err, data) => {
+        if (err) {
+            response.send(err.message)
+        } else {
+            const users = await userModel.where({ _id: request.body._id }).update(request.body.data);
 
-    try {
-        response.send(users);
-    } catch (error) {
-        response.status(500).send(error);
-    }
+            try {
+                response.send(users);
+            } catch (error) {
+                response.status(500).send(error);
+            }
+        }
+    })
+
+
+
 });
 
 app.listen(SERVER_PORT,
