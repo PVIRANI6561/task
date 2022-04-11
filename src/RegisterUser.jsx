@@ -2,6 +2,8 @@ import React from 'react'
 import { useForm } from "react-hook-form";
 import { useState } from 'react';
 import { Link } from "react-router-dom";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 //MUI
 import Card from '@mui/material/Card';
@@ -14,6 +16,9 @@ import Alert from '@mui/material/Alert';
 import { useInput } from '@mui/base';
 import { styled } from '@mui/system';
 import axios from 'axios';
+
+//formik
+import { Formik, Field, Form } from "formik";
 
 const blue = {
     100: '#DAECFF',
@@ -99,28 +104,32 @@ export default function RegisterUser() {
 
             <Card sx={{ minWidth: 275, boxShadow: 6 }}>
                 <CardContent>
-                    <form id='registerForm' onSubmit={handleSubmit(onSubmit)}>
-                        <Typography gutterBottom variant="h5" component="div">
-                            Register User
-                        </Typography>
+                    < Formik
+                        onSubmit={(values) => onSubmit(values)}
+                    >
+                        <Form>
+                            <Typography gutterBottom variant="h5" component="div">
+                                Register
+                            </Typography>
 
-                        <CustomInput aria-label="email" placeholder="Enter email"{...register("email", { required: true })} />
-                        {errors.email && <span>This field is required</span>}
+                            <Field name="email" >
+                                {({ field }) => <CustomInput required type="text" placeholder="Enter email id"  {...field} />}
+                            </Field>
 
-                        <CustomInput aria-label="password" placeholder="Enter password" {...register("password", { required: true })} />
-                        {errors.password && <span>This field is required</span>}
+                            <Field name="password">
+                                {({ field }) => <CustomInput required type="text" placeholder="Enter password" {...field} />}
+                            </Field>
+                            <br />
 
-                        <br />
-                        <Button variant="contained" size='small' type="submit">Register</Button>
+                            <Button variant="contained" size='small' type="submit">register</Button>
 
-                        <Link to="/">
-                            <Button size='small' sx={{ ml: 2 }}>
-                                Login
-                            </Button>
-                        </Link>
-
-                        {err && <div style={{ paddingTop: '10px' }}><Alert severity="error">{err}</Alert></div>}
-                    </form>
+                            <Link to="/">
+                                <Button size='small' sx={{ ml: 2 }}>
+                                    login
+                                </Button>
+                            </Link>
+                        </Form>
+                    </Formik >
                 </CardContent>
             </Card>
         </div>

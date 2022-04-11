@@ -1,10 +1,11 @@
+
 ###
 POST http://localhost:5050/register
 Content-Type: application/json
 
 {
-    "email" : "skylineinfosys@gmail.com",
-    "password" : "skyline"
+    "email" : "just@gmail.com",
+    "password" : "skylines"
 }  
 
 ###
@@ -12,13 +13,13 @@ POST http://localhost:5050/login
 Content-Type: application/json
 
 {
-    "email" : "skylineinfosys@gmail.com",
+    "email" : "skyline.infosysss@gmail.com",
     "password" : "skyline"
 }  
 
 ###
 GET http://localhost:5050/get_book
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNreWxpbmVpbmZvc3lzQGdtYWlsLmNvbSIsInBhc3MiOiIkMmIkMTAkZmJ0LjhjQ3NFTnBjRzg4WWlFTnlBT3NGUTRoVlVNQkpCVzRuLjNHeWwycU9VeVljcFp6Q0siLCJpYXQiOjE2NDkxMzY3NzN9.6X7dHSpyjRaY--QwiWi_Fewry-Zq8DaaP61ezv1hEjM
+Authorization: Bearera eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNreWxpbmVpbmZvc3lzQGdtYWlsLmNvbSIsInBhc3MiOiIkMmIkMTAkZmJ0LjhjQ3NFTnBjRzg4WWlFTnlBT3NGUTRoVlVNQkpCVzRuLjNHeWwycU9VeVljcFp6Q0siLCJpYXQiOjE2NDkxMzY3NzN9.6X7dHSpyjRaY--QwiWi_Fewry-Zq8DaaP61ezv1hEjM
 
 ###
 POST http://localhost:5050/add_book
@@ -32,5 +33,11 @@ DELETE http://localhost:5050/delete_book
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNreWxpbmVpbmZvc3lzQGdtYWlsLmNvbSIsInBhc3MiOiIkMmIkMTAkZmJ0LjhjQ3NFTnBjRzg4WWlFTnlBT3NGUTRoVlVNQkpCVzRuLjNHeWwycU9VeVljcFp6Q0siLCJpYXQiOjE2NDkxMzg1MTR9.Ss19lQFiCjelPhRWnmKU2Hi8DcIVMPdSp3eI2QqGZUI
 
-{ "_id": "624c210a2ac081e7285f1323" }
+{ "_id": "62511374c4f20ec67bc2ccba" }
 
+###
+PUT http://localhost:5050/update_book
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNreWxpbmVpbmZvc3lzQGdtYWlsLmNvbSIsInBhc3MiOiIkMmIkMTAkZmJ0LjhjQ3NFTnBjRzg4WWlFTnlBT3NGUTRoVlVNQkpCVzRuLjNHeWwycU9VeVljcFp6Q0siLCJpYXQiOjE2NDkxMzg1MTR9.Ss19lQFiCjelPhRWnmKU2Hi8DcIVMPdSp3eI2QqGZUI
+
+{ "_id": "62511374c4f20ec67bc2ccba" }

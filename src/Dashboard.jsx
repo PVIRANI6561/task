@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 
+//data aos
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 //MUI
 import Card from '@mui/material/Card';
 import { Button } from '@mui/material';
@@ -15,7 +19,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Snackbar from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 
 //MUI table
 import Table from '@mui/material/Table';
@@ -25,6 +28,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+
+//formik
+import { Formik, Field, Form } from "formik";
 
 import { useInput } from '@mui/base';
 import { styled } from '@mui/system';
@@ -133,27 +139,39 @@ export default function Dashboard(props) {
 
     function bookForm() {
         if (edit.status) {
-            return <form id='updateForm' onSubmit={handleSubmit(onSubmit)}>
-                <Typography gutterBottom variant="h5" component="div">
-                    Update Book
-                </Typography>
+            return (
 
-                <CustomInput name="bookName" aria-label="Book Name" placeholder="Enter book name" value={edit.editData.bookName} {...register("bookName", { required: true })} />
-                {errors.bookName && <span>This field is required</span>}
+                < Formik
+                    initialValues={edit.editData}
+                    onSubmit={(values) => onSubmit(values)}
+                >
+                    <Form>
+                        <Typography gutterBottom variant="h5" component="div">
+                            Update Book
+                        </Typography>
 
-                <CustomInput name="authorName" aria-label="Author Name" placeholder="Enter author name" value={edit.editData.authorName} {...register("authorName", { required: true })} />
-                {errors.authorName && <span>This field is required</span>}
+                        <Field name="bookName" >
+                            {({ field }) => <CustomInput required type="text"  {...field} />}
+                        </Field>
 
-                <CustomInput name="price" aria-label="price" placeholder="Price" value={edit.editData.price} {...register("price", { required: true, pattern: /^0|[1-9]\d*$/ })} />
-                {errors.price && <span>This field is required</span>}
+                        <Field name="authorName">
+                            {({ field }) => <CustomInput required type="text"  {...field} />}
+                        </Field>
 
-                <br />
-                <Button variant="contained" size='small' type="submit">update</Button>
-                <Button size='small' sx={{ ml: 2 }} onClick={(e) => {
-                    e.preventDefault();
-                    props.setAuth(localStorage.removeItem("token"))
-                }} >Logout</Button>
-            </form>
+                        <Field name="price">
+                            {({ field }) => <CustomInput required type="text"  {...field} />}
+                        </Field>
+                        <br />
+
+                        <Button variant="contained" size='small' type="submit">update</Button>
+                        <Button variant="contained" size='small' color='error' sx={{ ml: 1.5 }} onClick={() => setEdit({ status: false, editData: {} })} > cancle</Button>
+                        <Button size='small' sx={{ ml: 1.5 }} onClick={(e) => {
+                            e.preventDefault();
+                            props.setAuth(localStorage.removeItem("token"))
+                        }} >Logout</Button>
+                    </Form>
+                </Formik >
+            )
         }
 
         return <form id='registerForm' onSubmit={handleSubmit(onSubmit)}>
@@ -216,22 +234,9 @@ export default function Dashboard(props) {
                                     <TableCell>{item.price}</TableCell>
                                     <TableCell>
                                         <Stack direction="row">
-                                            {
-                                                edit.status
-                                                    ?
-                                                    <IconButton aria-label="edit" size="small" onClick={() => {
-                                                        setEdit({ status: false, editData: {} })
-                                                        reset({ bookName: null, authorName: null, price: null });
-                                                    }
-                                                    }>
-                                                        <CloseIcon fontSize="small" />
-                                                    </IconButton>
-                                                    :
-                                                    <IconButton aria-label="edit" size="small" onClick={() => setEdit({ status: true, editData: item })}>
-                                                        <EditIcon fontSize="small" />
-                                                    </IconButton>
-                                            }
-
+                                            <IconButton aria-label="edit" size="small" onClick={() => setEdit({ status: true, editData: item })}>
+                                                <EditIcon fontSize="small" />
+                                            </IconButton>
                                             <IconButton aria-label="delete" size="small" onClick={() => deleteBook(item._id)}>
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>

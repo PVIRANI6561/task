@@ -2,6 +2,8 @@ import React from 'react'
 import { useForm } from "react-hook-form";
 import { useState } from 'react';
 import { Link } from "react-router-dom";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 //MUI
 import Card from '@mui/material/Card';
@@ -14,6 +16,9 @@ import Alert from '@mui/material/Alert';
 import { useInput } from '@mui/base';
 import { styled } from '@mui/system';
 import axios from 'axios';
+
+//formik
+import { Formik, Field, Form } from "formik";
 
 const blue = {
     100: '#DAECFF',
@@ -72,6 +77,7 @@ const CustomInput = React.forwardRef(function CustomInput(props, ref) {
 const color = cyan[50];
 
 export default function Login(props) {
+    AOS.init();
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [err, setErr] = useState(null);
 
@@ -90,30 +96,36 @@ export default function Login(props) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: color }}>
 
-            <Card sx={{ minWidth: 275, boxShadow: 6 }}>
+            <Card data-aos='flip-up' sx={{ minWidth: 275, boxShadow: 6 }}>
                 <CardContent>
-                    <form id='registerForm' onSubmit={handleSubmit(onSubmit)}>
-                        <Typography gutterBottom variant="h5" component="div">
-                            LogIn
-                        </Typography>
 
-                        <CustomInput aria-label="email" placeholder="Enter email"{...register("email", { required: true })} />
-                        {errors.email && <span>This field is required</span>}
+                    < Formik
+                        initialValues={{ email: "", password: "" }}
+                        onSubmit={(values) => onSubmit(values)}
+                    >
+                        <Form>
+                            <Typography gutterBottom variant="h5" component="div">
+                                LogIn
+                            </Typography>
 
-                        <CustomInput aria-label="password" placeholder="Enter password" {...register("password", { required: true })} />
-                        {errors.password && <span>This field is required</span>}
+                            <Field name="email" >
+                                {({ field }) => <CustomInput required type="text" placeholder="Enter email id" {...field} />}
+                            </Field>
 
-                        <br />
-                        <Button variant="contained" size='small' type="submit">Login</Button>
+                            <Field name="password">
+                                {({ field }) => <CustomInput required type="text" placeholder="Enter password" {...field} />}
+                            </Field>
+                            <br />
 
-                        <Link to="/register">
-                            <Button size='small' sx={{ ml: 2 }}>
-                                register
-                            </Button>
-                        </Link>
+                            <Button variant="contained" size='small' type="submit">Login</Button>
 
-                        {err && <div style={{ paddingTop: '10px' }}><Alert severity="error">{err}</Alert></div>}
-                    </form>
+                            <Link to="/register">
+                                <Button size='small' sx={{ ml: 2 }}>
+                                    register
+                                </Button>
+                            </Link>
+                        </Form>
+                    </Formik >
                 </CardContent>
             </Card>
         </div>
